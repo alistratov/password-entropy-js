@@ -4,9 +4,9 @@ Calculate password strength.
 
 ## Synopsis
 ```js
-import PasswordEntropy from "@alistratov/data-password-entropy";
-PasswordEntropy.passwordEntropy('password');  // 35
-PasswordEntropy.passwordEntropy('Vgk4@HDk6X7gEp7');  // 85
+const { default: PasswordEntropy } = await import("data-password-entropy");
+PasswordEntropy.passwordEntropy("password");  // 35
+PasswordEntropy.passwordEntropy("Vgk4@HDk6X7gEp7");  // 85
 ```
 
 
@@ -15,7 +15,7 @@ The `data-password-entropy` package provides a function to calculate the entropy
 
 ## See also
 Similar packages for other languages:
-* [npm](https://www.npmjs.com/package/@alistratov/data-password-entropy)
+* [npm](https://www.npmjs.com/package/data-password-entropy)
 * [pypi](https://pypi.org/project/data-password-entropy/)
 * [cpan](https://metacpan.org/pod/Data::Password::Entropy) (outdated)
 
