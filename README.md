@@ -1,6 +1,9 @@
 # data-password-entropy
 Calculate password strength.
 
+[![NPM - Version](https://img.shields.io/npm/v/data-password-entropy)](https://www.npmjs.com/package/data-password-entropy) [![codecov](https://codecov.io/gh/alistratov/password-entropy-js/graph/badge.svg)](https://codecov.io/gh/alistratov/password-entropy-js) [![NPM - Downloads](https://img.shields.io/npm/dm/data-password-entropy
+)](https://npmtrends.com/data-password-entropy)
+
 
 ## Synopsis
 ```js
