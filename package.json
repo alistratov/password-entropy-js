@@ -1,6 +1,6 @@
 {
   "name": "data-password-entropy",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "Calculate password strength.",
   "main": "src/index.js",
   "scripts": {
@@ -28,5 +28,8 @@
     "eslint": "^8.0.0",
     "husky": "^7.0.4",
     "jest": "^29.7.0"
+  },
+  "dependencies": {
+    "data-password-entropy": "^0.0.2"
   }
 }

@@ -130,3 +130,4 @@ dist
 .pnp.*
 
 MY_NOTES.md
+tests_manual/

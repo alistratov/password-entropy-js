@@ -2,14 +2,16 @@
 Calculate password strength.
 
 [![NPM - Version](https://img.shields.io/npm/v/data-password-entropy)](https://www.npmjs.com/package/data-password-entropy) [![codecov](https://codecov.io/gh/alistratov/password-entropy-js/graph/badge.svg)](https://codecov.io/gh/alistratov/password-entropy-js) [![NPM - Downloads](https://img.shields.io/npm/dm/data-password-entropy
-)](https://npmtrends.com/data-password-entropy)
+)](https://npm-stat.com/charts.html?package=data-password-entropy) ![NPM Unpacked size](https://img.shields.io/npm/unpacked-size/data-password-entropy) ![NPM Bundle size](https://img.shields.io/bundlephobia/minzip/data-password-entropy)
 
 
 ## Synopsis
+```bash
+npm install data-password-entropy
+```
 ```js
-const { default: PasswordEntropy } = await import("data-password-entropy");
-PasswordEntropy.passwordEntropy("password");  // 35
-PasswordEntropy.passwordEntropy("Vgk4@HDk6X7gEp7");  // 85
+const { passwordEntropy } = require('data-password-entropy');
+console.log(passwordEntropy('P@ssw0rd'));  // 47
 ```
 
 
