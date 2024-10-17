@@ -8,8 +8,6 @@
 
 const passwordEntropy = (function () {
     // Character classes and their capacities
-    let initialized = false;
-
     const CONTROL = 0
     const NUMBER = 1
     const UPPER = 2
@@ -22,43 +20,34 @@ const passwordEntropy = (function () {
     let CHAR_CLASSES = [];
     let CLASS_CAPACITIES = [];
 
-    function initializeData() {
-        if (initialized) return { CHAR_CLASSES, CLASS_CAPACITIES };
-
-        for (let i = 0; i < 128; i++) {
-            let c = CONTROL;
-            if (i < 32 || i == 127) {
-                c = CONTROL;
-            }
-            else if (i >= '0'.charCodeAt(0) && i <= '9'.charCodeAt(0)) {
-                c = NUMBER;
-            }
-            else if (i >= 'A'.charCodeAt(0) && i <= 'Z'.charCodeAt(0)) {
-                c = UPPER;
-            }
-            else if (i >= 'a'.charCodeAt(0) && i <= 'z'.charCodeAt(0)) {
-                c = LOWER;
-            }
-            else if (i == 32 || "!@#$%^&*()_+-=/.,".includes(String.fromCharCode(i))) {
-                c = PUNCTUATION_1;
-            }
-            else {
-                c = PUNCTUATION_2;
-            }
-            CHAR_CLASSES[i] = c;
-            if (CLASS_CAPACITIES[c] == undefined) {
-                CLASS_CAPACITIES[c] = 0;
-            }
-            CLASS_CAPACITIES[c] = CLASS_CAPACITIES[c] + 1;
+    for (let i = 0; i < 128; i++) {
+        let c = CONTROL;
+        if (i < 32 || i == 127) {
+            c = CONTROL;
         }
-        CLASS_CAPACITIES[OTHER] = 128
-        CLASS_CAPACITIES[PUNCTUATION_2] = Math.floor(CLASS_CAPACITIES[PUNCTUATION_2] * 1.8);
-        initialized = true;
-
-        return { CHAR_CLASSES, CLASS_CAPACITIES };
+        else if (i >= '0'.charCodeAt(0) && i <= '9'.charCodeAt(0)) {
+            c = NUMBER;
+        }
+        else if (i >= 'A'.charCodeAt(0) && i <= 'Z'.charCodeAt(0)) {
+            c = UPPER;
+        }
+        else if (i >= 'a'.charCodeAt(0) && i <= 'z'.charCodeAt(0)) {
+            c = LOWER;
+        }
+        else if (i == 32 || "!@#$%^&*()_+-=/.,".includes(String.fromCharCode(i))) {
+            c = PUNCTUATION_1;
+        }
+        else {
+            c = PUNCTUATION_2;
+        }
+        CHAR_CLASSES[i] = c;
+        if (CLASS_CAPACITIES[c] == undefined) {
+            CLASS_CAPACITIES[c] = 0;
+        }
+        CLASS_CAPACITIES[c] = CLASS_CAPACITIES[c] + 1;
     }
-
-    initializeData();
+    CLASS_CAPACITIES[OTHER] = 128
+    CLASS_CAPACITIES[PUNCTUATION_2] = Math.floor(CLASS_CAPACITIES[PUNCTUATION_2] * 1.8);
 
     /**
      * Calculates the entropy of a given password.
