@@ -8,49 +8,48 @@
 
 const passwordEntropy = (function () {
     // Character classes and their capacities
-    const CONTROL = 0
-    const NUMBER = 1
-    const UPPER = 2
-    const LOWER = 3
-    const PUNCTUATION_1 = 4
-    const PUNCTUATION_2 = 5
-    const OTHER = 6
-    const N_CLASSES = 7
+//    const CONTROL = 0
+//    const NUMBER = 1
+//    const UPPER = 2
+//    const LOWER = 3
+//    const PUNCTUATION_1 = 4
+//    const PUNCTUATION_2 = 5
+//    const OTHER = 6
+//    const N_CLASSES = 7
 
     let CHAR_CLASSES = [];
     let CLASS_CAPACITIES = [];
 
     for (let i = 0; i < 128; i++) {
-        let c = CONTROL;
+        let c = 5;  // PUNCTUATION_2;
         if (i < 32 || i == 127) {
-            c = CONTROL;
+            c = 0; // CONTROL;
         }
 //        else if (i >= '0'.charCodeAt(0) && i <= '9'.charCodeAt(0)) {
         else if (i > 47 && i < 58) {
-            c = NUMBER;
+            c = 1; // NUMBER;
         }
 //        else if (i >= 'A'.charCodeAt(0) && i <= 'Z'.charCodeAt(0)) {
         else if (i > 64 && i < 91) {
-            c = UPPER;
+            c = 2; // UPPER;
         }
 //        else if (i >= 'a'.charCodeAt(0) && i <= 'z'.charCodeAt(0)) {
         else if (i > 96 && i < 123) {
-            c = LOWER;
+            c = 3; // LOWER;
         }
         else if (i == 32 || "!@#$%^&*()_+-=/.,".includes(String.fromCharCode(i))) {
-            c = PUNCTUATION_1;
+            c = 4; // PUNCTUATION_1;
         }
-        else {
-            c = PUNCTUATION_2;
-        }
+//        else {
+//            c = 5; // PUNCTUATION_2;
+//        }
         CHAR_CLASSES[i] = c;
-        if (CLASS_CAPACITIES[c] == undefined) {
-            CLASS_CAPACITIES[c] = 0;
-        }
-        CLASS_CAPACITIES[c] = CLASS_CAPACITIES[c] + 1;
+//        if (!CLASS_CAPACITIES[c]) CLASS_CAPACITIES[c] = 0;
+        CLASS_CAPACITIES[c] ??= 0;
+        CLASS_CAPACITIES[c]++;
     }
-    CLASS_CAPACITIES[OTHER] = 128
-    CLASS_CAPACITIES[PUNCTUATION_2] = Math.floor(CLASS_CAPACITIES[PUNCTUATION_2] * 1.8);
+    CLASS_CAPACITIES[6] = 128; // OTHER
+    CLASS_CAPACITIES[5] = Math.floor(CLASS_CAPACITIES[5] * 1.8); // PUNCTUATION_2
 
     /**
      * Calculates the entropy of a given password.
@@ -70,7 +69,7 @@ const passwordEntropy = (function () {
         let first = true;
         for (const c of password) {
             const nc = c.codePointAt(0);
-            let cls = nc < 128 ? CHAR_CLASSES[nc] : OTHER;
+            let cls = nc < 128 ? CHAR_CLASSES[nc] : 6; // or OTHER
             usedClasses |= 1 << cls;
 
             let incr = 1; // value to increment effective length
@@ -100,7 +99,7 @@ const passwordEntropy = (function () {
         }
 
         let pci = 0;
-        for (let cls = 0; cls < N_CLASSES; cls++) {
+        for (let cls = 0; cls < 7; cls++) {  // N_CLASSES
             if (usedClasses & 1 << cls) {
                 pci += CLASS_CAPACITIES[cls];
             }
