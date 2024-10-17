@@ -21,6 +21,8 @@ const testCases = [
     ['aaab', 12],
     ['aaax', 12],
     ['aaaaaaaaaaaaaaaaax', 13],
+    ['1234', 9],
+    ['1243', 13],
     ['abab', 12],
     ['abba', 14],
     ['ababab', 14],

@@ -6,127 +6,119 @@
  * @module data-password-entropy
  */
 
-// Character classes and their capacities
-let initialized = false;
+const passwordEntropy = (function () {
+    // Character classes and their capacities
+    let initialized = false;
 
-let CONTROL = 0
-let NUMBER = 1
-let UPPER = 2
-let LOWER = 3
-let PUNCTUATION_1 = 4
-let PUNCTUATION_2 = 5
-let OTHER = 6
-let N_CLASSES = 7
+    const CONTROL = 0
+    const NUMBER = 1
+    const UPPER = 2
+    const LOWER = 3
+    const PUNCTUATION_1 = 4
+    const PUNCTUATION_2 = 5
+    const OTHER = 6
+    const N_CLASSES = 7
 
-let CHAR_CLASSES = [];
-let CLASS_CAPACITIES = [];
+    let CHAR_CLASSES = [];
+    let CLASS_CAPACITIES = [];
 
+    function initializeData() {
+        if (initialized) return { CHAR_CLASSES, CLASS_CAPACITIES };
 
-function initializeConstants() {
-    if (initialized) return { CHAR_CLASSES, CLASS_CAPACITIES };
+        for (let i = 0; i < 128; i++) {
+            let c = CONTROL;
+            if (i < 32 || i == 127) {
+                c = CONTROL;
+            }
+            else if (i >= '0'.charCodeAt(0) && i <= '9'.charCodeAt(0)) {
+                c = NUMBER;
+            }
+            else if (i >= 'A'.charCodeAt(0) && i <= 'Z'.charCodeAt(0)) {
+                c = UPPER;
+            }
+            else if (i >= 'a'.charCodeAt(0) && i <= 'z'.charCodeAt(0)) {
+                c = LOWER;
+            }
+            else if (i == 32 || "!@#$%^&*()_+-=/.,".includes(String.fromCharCode(i))) {
+                c = PUNCTUATION_1;
+            }
+            else {
+                c = PUNCTUATION_2;
+            }
+            CHAR_CLASSES[i] = c;
+            if (CLASS_CAPACITIES[c] == undefined) {
+                CLASS_CAPACITIES[c] = 0;
+            }
+            CLASS_CAPACITIES[c] = CLASS_CAPACITIES[c] + 1;
+        }
+        CLASS_CAPACITIES[OTHER] = 128
+        CLASS_CAPACITIES[PUNCTUATION_2] = Math.floor(CLASS_CAPACITIES[PUNCTUATION_2] * 1.8);
+        initialized = true;
 
-    for (let i = 0; i < 128; i++) {
-        let c = CONTROL;
-        if (i < 32 || i == 127) {
-            c = CONTROL;
-        }
-        else if (i >= '0'.charCodeAt(0) && i <= '9'.charCodeAt(0)) {
-            c = NUMBER;
-        }
-        else if (i >= 'A'.charCodeAt(0) && i <= 'Z'.charCodeAt(0)) {
-            c = UPPER;
-        }
-        else if (i >= 'a'.charCodeAt(0) && i <= 'z'.charCodeAt(0)) {
-            c = LOWER;
-        }
-        else if (i == 32 || "!@#$%^&*()_+-=/.,".includes(String.fromCharCode(i))) {
-            c = PUNCTUATION_1;
-        }
-        else {
-            c = PUNCTUATION_2;
-        }
-        CHAR_CLASSES[i] = c;
-        if (CLASS_CAPACITIES[c] == undefined) {
-            CLASS_CAPACITIES[c] = 0;
-        }
-        CLASS_CAPACITIES[c] = CLASS_CAPACITIES[c] + 1;
+        return { CHAR_CLASSES, CLASS_CAPACITIES };
     }
-    CLASS_CAPACITIES[OTHER] = 128
-    CLASS_CAPACITIES[PUNCTUATION_2] = Math.floor(CLASS_CAPACITIES[PUNCTUATION_2] * 1.8);
-    initialized = true;
 
-    // Print the constants for debug purposes
-    // console.log(CHAR_CLASSES);
-    // console.log(CLASS_CAPACITIES);
+    initializeData();
 
-    return { CHAR_CLASSES, CLASS_CAPACITIES };
-}
+    /**
+     * Calculates the entropy of a given password.
+     *
+     * @param {string} password - The password string to evaluate.
+     * @returns {number} - The calculated entropy value.
+     */
+    function calcEntropy(password) {
+        if (!password) return 0;
 
-// Initialize constants once when the module is loaded
-initializeConstants();
+        let effLen = 0; // effective length
+        let usedClasses = 0; // bitmask for used classes
+        const charCounts = {};
+        const distances = {};
+        let prev_nc; // previous character code
 
-/**
- * Calculates the entropy of a given password.
- *
- * @param {string} password - The password string to evaluate.
- * @returns {number} - The calculated entropy value.
- */
-function passwordEntropy(password) {
-    if (!password) return 0;
+        let first = true;
+        for (const c of password) {
+            const nc = c.codePointAt(0);
+            let cls = nc < 128 ? CHAR_CLASSES[nc] : OTHER;
+            usedClasses |= 1 << cls;
 
-    let effLen = 0.0; // effective length
-    let usedClasses = 0; // bitmask for used classes
-    const charCounts = {};
-    const distances = {};
-    let prevNc = 0; // previous character code
+            let incr = 1; // value to increment effective length
 
-    let i = 0;
-    for (const c of password) {
-        const nc = c.codePointAt(0);
-        let cls;
+            if (!first) {
+                // not the first character
+                const d = nc - prev_nc;
+                if (distances[d]) {
+                    distances[d]++;
+                    incr /= distances[d];
+                } else {
+                    distances[d] = 1;
+                }
+            }
+            first = false;
 
-        if (nc > 127) {
-            cls = OTHER;
-        } else {
-            cls = CHAR_CLASSES[nc];
+            if (charCounts[c]) {
+                charCounts[c]++;
+                effLen += incr / charCounts[c];
+            }
+            else {
+                charCounts[c] = 1;
+                effLen += incr;
+            }
+
+            prev_nc = nc;
         }
-        usedClasses |= 1 << cls;
 
-        let incr = 1.0; // value to increment effective length
-
-        if (i > 0) {
-            // not the first character
-            const d = nc - prevNc;
-            if (distances[d]) {
-                distances[d] += 1;
-                incr /= distances[d];
-            } else {
-                distances[d] = 1;
+        let pci = 0;
+        for (let cls = 0; cls < N_CLASSES; cls++) {
+            if (usedClasses & 1 << cls) {
+                pci += CLASS_CAPACITIES[cls];
             }
         }
 
-        if (charCounts[c]) {
-            charCounts[c] += 1;
-            effLen += incr / charCounts[c];
-        } else {
-            charCounts[c] = 1;
-            effLen += incr;
-        }
-
-        prevNc = nc;
-        i += 1;
+        return Math.floor(effLen * Math.log2(pci));
     }
 
-    let pci = 0;
-    for (let cls = 0; cls < N_CLASSES; cls++) {
-        if (usedClasses & 1 << cls) {
-            pci += CLASS_CAPACITIES[cls];
-        }
-    }
-
-    const bitsPerCharacter = Math.log2(pci);
-    return Math.floor(effLen * bitsPerCharacter);
-}
+    return calcEntropy;
+})();
 
 module.exports = {
   passwordEntropy

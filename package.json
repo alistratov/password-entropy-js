@@ -1,6 +1,6 @@
 {
   "name": "data-password-entropy",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Calculate password strength.",
   "main": "src/index.js",
   "files": [
