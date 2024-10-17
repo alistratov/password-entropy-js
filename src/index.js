@@ -25,13 +25,16 @@ const passwordEntropy = (function () {
         if (i < 32 || i == 127) {
             c = CONTROL;
         }
-        else if (i >= '0'.charCodeAt(0) && i <= '9'.charCodeAt(0)) {
+//        else if (i >= '0'.charCodeAt(0) && i <= '9'.charCodeAt(0)) {
+        else if (i > 47 && i < 58) {
             c = NUMBER;
         }
-        else if (i >= 'A'.charCodeAt(0) && i <= 'Z'.charCodeAt(0)) {
+//        else if (i >= 'A'.charCodeAt(0) && i <= 'Z'.charCodeAt(0)) {
+        else if (i > 64 && i < 91) {
             c = UPPER;
         }
-        else if (i >= 'a'.charCodeAt(0) && i <= 'z'.charCodeAt(0)) {
+//        else if (i >= 'a'.charCodeAt(0) && i <= 'z'.charCodeAt(0)) {
+        else if (i > 96 && i < 123) {
             c = LOWER;
         }
         else if (i == 32 || "!@#$%^&*()_+-=/.,".includes(String.fromCharCode(i))) {
